@@ -13,7 +13,28 @@ def fill_mins_to_subway(df):
     return df['min_to_subway'].fillna(df[df['min_to_subway'].isnull()].apply(lambda row: avg_subway_time_per_zip.loc[row['addr_zip']][0], axis=1))
 
 
+def fill_size_sqft(df):
+    ''' 
+    Use Linear Regression to fill the size_sqft using bathrooms and bedrooms count. 
+    '''
+    data = df[['size_sqft', 'bathrooms', 'bedrooms']]
+    # Setup and fit model
+    train_data = data.loc[data['size_sqft'] != 0]
+    clf = LinearRegression()
+    features = ['bathrooms', 'bedrooms']
+    clf.fit(train_data[features], train_data['size_sqft'])
+
+    df.loc[df['size_sqft'] == 0, 'size_sqft'] = np.NaN
+
+    test_data = df.loc[df['size_sqft'].isna()]
+    predicted_sqft = clf.predict(test_data[features])
+    sqft_predict = pd.Series(index= test_data.index, data = predicted_sqft)
+
+    return df['size_sqft'].fillna(sqft_predict)
+
+
 def fill_floor_count(df):
+    
     ''' 
     Use Linear Regression to fill the floorcount using the given features. If the row does not contain all the features used to model, 
     then the floorcount will remain null. 
