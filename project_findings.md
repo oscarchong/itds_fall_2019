@@ -3,10 +3,12 @@
 
 
 (a) What outside data have you appended to the original data set? Why did you choose this data?
--We added crime data, school data, and parks data. The reason why we chose this data is because we believe that these are also some of the major factors that may affect rent prices in the area. 
+
+- We added crime data, school data, and parks data. The reason why we chose this data is because we believe that these are also some of the major factors that may affect rent prices in the area. 
 
 (b) Does the inclusion of this additional data raise any ethical considerations?
--We believe that crime data would raise ethical considerations because people who have family wouldn't want to move into neighoborhoods with high crime rates and with higher crime rates, rents might be lower. 
+
+- We believe that crime data would raise ethical considerations because people who have family wouldn't want to move into neighoborhoods with high crime rates and with higher crime rates, rents might be lower. 
 
 ### (2) Data Exploration.
 (a) What outliers present issues for your analysis? How have you chosen to handle them? Why?
