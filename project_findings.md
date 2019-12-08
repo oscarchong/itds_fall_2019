@@ -89,8 +89,13 @@ Our model is useful for predicting rent prices that are on the lower spectrum of
 After training our model, we used our model to predict on our training set. Ideally, our model should be able to predict these perfectly. However, it did not, so we took advantage of this fact to see where our model had a high MSE. We found that our model had a high MSE on properties in high end neighborhoods, especially the Upper West and Upper East side. We believe there may be some features in these neighborhoods that we don’t have. Also, when imputing the size sqft, mistakes in Manhattan tended to create a larger MSE since the price per sqft for rentals is much higher in Manhattan.
 
 **(d) Create at least one visualization that demonstrates the predictive power of your model.**
-![alt text](https://cdn.discordapp.com/attachments/355891963469365252/653085866800971786/unknown.png "Logo Title Text 1")
+![alt text](https://cdn.discordapp.com/attachments/355891963469365252/653117402149683210/unknown.png "Normal Errors")
 
+This map shows us that for the most part our model is getting an error of less than 500 for most areas. We get higher up in the spectrum in those areas that we considered "hot" areas earlier. This means that we need to get a better idea of why those areas are popular to be able to improve our MSE in these areas. 
+
+![alt text](https://cdn.discordapp.com/attachments/355891963469365252/653116614669107230/unknown.png "Extreme Errors")
+
+This map shows us where our model messes up really badly. From the looks of it, we do really bad in that area surrounding Central Park ( Upper West, Upper East, and Midtown), Soho, Tribeca, and that one area in Brooklyn. The Brooklyn MSE could be due to the fact that the neighborhood is close to a bridge that leads you to Manhattan. 
 
 ## (5) Conclusion
 
