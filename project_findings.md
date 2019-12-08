@@ -39,6 +39,7 @@ Originally we thought that floor number and floor count would be powerful featur
 During our data exploration, we also found that there were many neighborhoods with a much larger average rent than other neighborhoods, and it would be difficult to find a way to incorporate these in our model since they are such large outliers. So, we ended up making a feature which determined if that rent listing was located in a top neighborhood. This would hopefully account for the large rent differences between other neighborhoods and these so-called top neighborhoods.
 
 **(d) Create at least one visualization that demonstrates the predictive power of your data.**
+![alt text](https://cdn.discordapp.com/attachments/355891963469365252/653085866800971786/unknown.png "Logo Title Text 1")
 
 
 ## (3) Transformation and Modeling.
@@ -88,6 +89,7 @@ Our model is useful for predicting rent prices that are on the lower spectrum of
 After training our model, we used our model to predict on our training set. Ideally, our model should be able to predict these perfectly. However, it did not, so we took advantage of this fact to see where our model had a high MSE. We found that our model had a high MSE on properties in high end neighborhoods, especially the Upper West and Upper East side. We believe there may be some features in these neighborhoods that we don’t have. Also, when imputing the size sqft, mistakes in Manhattan tended to create a larger MSE since the price per sqft for rentals is much higher in Manhattan.
 
 **(d) Create at least one visualization that demonstrates the predictive power of your model.**
+![alt text](https://cdn.discordapp.com/attachments/355891963469365252/653104395223040052/unknown.png "Logo Title Text 1")
 
 
 ## (5) Conclusion
