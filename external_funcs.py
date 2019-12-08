@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 import numpy as np
 import re
+from math import sin, cos, sqrt, atan2, radians
 
 
 def fill_mins_to_subway(df):
@@ -13,19 +14,22 @@ def fill_mins_to_subway(df):
     return df['min_to_subway'].fillna(df[df['min_to_subway'].isnull()].apply(lambda row: avg_subway_time_per_zip.loc[row['addr_zip']][0], axis=1))
 
 
-def fill_size_sqft(df):
+def train_sqft_model(df):
     ''' 
     Use Linear Regression to fill the size_sqft using bathrooms and bedrooms count. 
     '''
-    data = df[['size_sqft', 'bathrooms', 'bedrooms']]
+    data = df[['size_sqft', 'bathrooms', 'bedrooms', 'has_washer_dryer', 'has_fireplace', 'has_dishwasher']]
     # Setup and fit model
-    train_data = data.loc[data['size_sqft'] != 0]
+    train_data = data.loc[data['size_sqft'].isna() == False]
     clf = LinearRegression()
-    features = ['bathrooms', 'bedrooms']
+    features = ['bathrooms', 'bedrooms', 'has_washer_dryer', 'has_fireplace', 'has_dishwasher']
     clf.fit(train_data[features], train_data['size_sqft'])
 
-    df.loc[df['size_sqft'] == 0, 'size_sqft'] = np.NaN
+    return clf 
 
+
+def fill_size_sqft(df, clf):
+    features = ['bathrooms', 'bedrooms', 'has_washer_dryer', 'has_fireplace', 'has_dishwasher']
     test_data = df.loc[df['size_sqft'].isna()]
     predicted_sqft = clf.predict(test_data[features])
     sqft_predict = pd.Series(index= test_data.index, data = predicted_sqft)
@@ -33,7 +37,7 @@ def fill_size_sqft(df):
     return df['size_sqft'].fillna(sqft_predict)
 
 
-def fill_floor_count(df):
+def train_floor_count_model(df):
     
     ''' 
     Use Linear Regression to fill the floorcount using the given features. If the row does not contain all the features used to model, 
@@ -50,6 +54,12 @@ def fill_floor_count(df):
     features = ['floornumber', 'has_childrens_playroom', 'has_pool', 'has_concierge', 'has_garage', 'has_gym', 'borough_Queens', 'borough_Bronx', 'borough_Manhattan', 'borough_Brooklyn', 'borough_Staten Island']
     clf.fit(data[features], data['floor_count'])
 
+    return clf
+
+
+def fill_floor_count(df, clf):
+    df = pd.get_dummies(df, columns=['borough'])
+    features = ['floornumber', 'has_childrens_playroom', 'has_pool', 'has_concierge', 'has_garage', 'has_gym', 'borough_Queens', 'borough_Bronx', 'borough_Manhattan', 'borough_Brooklyn', 'borough_Staten Island']
     # Anything with floor count of 0 is labeled as NaN
     df.loc[df['floor_count'] == 0, 'floor_count'] = np.NaN
 
@@ -179,7 +189,7 @@ def number_privileges(df):
 
     r = re.compile(r"has.*")
     fancy_stuff = list(filter(r.match, df.columns))
-    fancy_stuff.extend(['is_furnished','allows_pets'])
+    fancy_stuff.extend(['is_furnished','allows_pets', 'is_renovated'])
     
     return np.sum(df[fancy_stuff].values,1)
 
@@ -209,3 +219,36 @@ def number_of_schools(schools_df, df):
 
 def school_level(df):
     return df['number_of_schools'].apply(lambda x: 1 if x > 19 else 0)
+
+
+def get_population_ratios(df):
+    r = re.compile(r".*Pop$")
+    populations = list(filter(r.match, df.columns))
+
+    for population in populations:
+        col_name = population + '_Ratio'
+        df[col_name] = df[population]/df['ZipCodePopulation']
+
+
+def dist(lat1, lon1, lat2, lon2):
+
+    R = 6373.0
+    lat1 = radians(lat1)
+    lon1 = radians(lon1)
+    lat2 = radians(lat2)
+    lon2 = radians(lon2)
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    distance = R * c
+    return distance
+
+
+def fill_price_per_sqft(df):
+    borough_sqft_price = df.groupby('borough').mean()['avg_price_per_sqft']
+    price_per_sqft_filled = df[df['avg_price_per_sqft'].isnull()].apply(lambda row: borough_sqft_price.loc[row['borough']], axis=1)
+    return df.avg_price_per_sqft.fillna(price_per_sqft_filled)
